@@ -4,6 +4,7 @@ import time
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
+from rich.table import Table
 from rich.syntax import Syntax
 from core.generator import AutonomousExploitEngine
 from core.stealth import PhantomStealthEngine
@@ -15,7 +16,7 @@ BANNER = """
  [bold white]██║   ██║██╔══██║██║   ██║╚════██║   ██║        ██╔═══╝ ██╔═══╝ ██╔═══╝ ╚════██║[/bold white]
  [bold blue]╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   ██╗  ██║     ██║     ██║     ███████║[/bold blue]
  [bold blue] ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝     ╚═╝     ╚═╝     ╚══════╝[/bold blue]
- [bold yellow]     GHOST-RedOps: Elite Operating System Exploitation & C2 Suite[/bold yellow]
+ [bold yellow]     GHOST-RedOps: Elite Weaponized Exploit Engine & 1100+ Active DB[/bold yellow]
  [italic cyan]                               Ghost-SY1 Security[/italic cyan]
 """
 
@@ -27,27 +28,37 @@ def clear_screen():
 def main():
     clear_screen()
     console.print(Panel(BANNER, border_style="bold red", expand=False))
-    console.print("[bold yellow][*] Initializing GHOST-RedOps System Exploitation Engine...[/bold yellow]\n")
+    console.print("[bold yellow][*] Initializing Ghost-RedOps Elite Weaponized Engine...[/bold yellow]\n")
     
-    target_ip = Prompt.ask("[bold cyan]Enter Target System IP Address[/bold cyan]")
+    target_ip = Prompt.ask("[bold cyan]Enter Target System IP[/bold cyan]")
     lhost = Prompt.ask("[bold cyan]Enter Listener LHOST (Your IP)[/bold cyan]")
     lport = int(Prompt.ask("[bold cyan]Enter Listener LPORT (Port)[/bold cyan]"))
     
     stealth = PhantomStealthEngine()
-    console.print(f"\n[bold green][*][/bold green] Engaging EDR Evasion & Memory Obfuscation...")
+    console.print(f"\n[bold green][*][/bold green] Engaging Anti-Ban Stealth & Memory Obfuscation...")
     stealth.evade_waf_delay()
     
     engine = AutonomousExploitEngine(lhost, lport, target_ip)
     auto_cve = engine.payload_db[0]['cve'] if engine.payload_db else "CVE-2026-0001"
     
-    result = engine.execute_autonomous_exploit(auto_cve)
+    # In a real autonomous run, we would scan first. Here we show the elite selection.
+    match = next((v for v in engine.payload_db if v['cve'] == auto_cve), engine.payload_db[0])
+    
+    console.print(Panel(
+        f"[bold green]Target Product:[/bold green] {match['product']}\n"
+        f"[bold cyan]Matched Exploit:[/bold cyan] {match['cve']} ({match['vulnerability_type']})\n"
+        f"[bold yellow]Reliability Score:[/bold yellow] [bold green]{match['reliability_score']}/10[/bold green]\n"
+        f"[bold white]Verification Steps:[/bold white] {match['verification_steps']}",
+        title="[bold red]Elite Exploit Selection[/bold red]",
+        border_style="bold red"
+    ))
+    
+    result = engine.execute_autonomous_exploit(match['cve'])
     
     if result["status"] == "success":
-        console.print(Panel(f"[bold green]Target System Product:[/bold green] {result['product']}\n[bold cyan]Matched OS Exploit:[/bold cyan] {result['cve']} ({result['vulnerability_type']})\n[bold yellow]Stealth Mode:[/bold yellow] Active (Memory Injection Ready)", border_style="bold green"))
-        
         syntax = Syntax(result['autonomous_script'], "python", theme="monokai", line_numbers=True)
-        console.print(Panel(syntax, title=f"Weaponized OS Exploit Script for {result['cve']}", border_style="bold red"))
-        console.print(f"\n[bold green][+][/bold green] Module Focus: [bold white]Operating System & System-Level Exploitation Only[/bold white]")
+        console.print(Panel(syntax, title=f"Weaponized Payload for {match['cve']}", border_style="bold red"))
+        console.print(f"\n[bold green][+][/bold green] Status: [bold white]Payload Weaponized & Ready for Injection[/bold white]")
     else:
         console.print(f"[bold red][!][/bold red] {result['message']}")
 
