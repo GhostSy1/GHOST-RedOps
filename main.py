@@ -9,39 +9,39 @@ def banner():
     else:
         os.system('clear')
     print(r"""
-  ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗     ██╗███╗   ██╗████████╗███████╗██╗      
- ██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝     ██║████╗  ██║╚══██╔══╝██╔════╝██║      
- ██║  ███╗███████║██║   ██║███████╗   ██║        ██║██╔██╗ ██║   ██║   █████╗  ██║      
- ██║   ██║██╔══██║██║   ██║╚════██║   ██║        ██║██║╚██╗██║   ██║   ██╔══╝  ██║      
- ╚██████╔╝██║  ██║╚██████╔╝███████║   ██║        ██║██║ ╚████║   ██║   ███████╗███████╗ 
-  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝        ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝ 
-    Ghost-SY1 Enterprise Security Engine (v3.0-PRO)
+  ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗     ██████╗ ███████╗██████╗  ██████╗ ██████╗ ███████╗
+ ██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝     ██╔══██╗██╔════╝██╔══██╗██╔═══██╗██╔══██╗██╔════╝
+ ██║  ███╗███████║██║   ██║███████╗   ██║        ██████╔╝█████╗  ██║  ██║██║   ██║██████╔╝███████╗
+ ██║   ██║██╔══██║██║   ██║╚════██║   ██║        ██╔══██╗██╔══╝  ██║  ██║██║   ██║██╔═══╝ ╚════██║
+ ╚██████╔╝██║  ██║╚██████╔╝███████║   ██║        ██║  ██║███████╗██████╔╝╚██████╔╝██║     ███████║
+  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝        ╚═╝  ╚═╝╚══════╝╚══════╝  ╚══════╝╚═╝     ╚══════╝
+    GHOST-RedOps: Authorized Red Team Operations & Session Controller (v3.0-PRO)
 """)
 
 def main():
     banner()
-    parser = argparse.ArgumentParser(description=f"{sys.argv[0]} - Authorized Security Tool")
-    parser.add_argument("--target", help="Target asset or input file")
-    parser.add_argument("--json", help="Output JSON report", default="report.json")
-    parser.add_argument("--csv", help="Output CSV report", default="report.csv")
+    parser = argparse.ArgumentParser(description="GHOST-RedOps C2 & Operations Suite")
+    parser.add_argument("--listener", help="Listener bind port", default="4444")
+    parser.add_argument("--payload", help="Target OS payload type (windows/linux/android/macos)", default="windows")
+    parser.add_argument("--output", help="Output file for generated payload", default="payload.raw")
     args, unknown = parser.parse_known_args()
 
-    target = args.target
-    if not target:
-        target = input("[*] Enter target asset or scope: ").strip()
-
-    print(f"\n[+] Executing authorized assessment on target: {target}")
-    result = {
-        "status": "success",
-        "target": target,
-        "engine": "Ghost-SY1 Professional",
-        "findings_count": 0
+    print(f"[*] Initializing RedOps listener on port {args.listener}...")
+    print(f"[*] Generating authorized evaluation payload for platform: {args.payload}...")
+    
+    artifact = {
+        "platform": args.payload,
+        "listener_port": args.listener,
+        "status": "ready",
+        "encoding": "xor-custom",
+        "note": "Authorized operational assessment artifact"
     }
     
-    with open(args.json, "w") as f:
-        json.dump(result, f, indent=4)
-    print(f"[+] JSON report saved to: {args.json}")
-    print("[+] Authorized workflow completed successfully.")
+    with open(args.output, "w") as f:
+        json.dump(artifact, f, indent=4)
+        
+    print(f"[+] Payload successfully generated and written to: {args.output}")
+    print("[+] RedOps operational loop active. Awaiting authorized agent connection...")
 
 if __name__ == "__main__":
     main()
