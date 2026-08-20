@@ -1,0 +1,4 @@
+*.json linguist-detectable=false
+*.json linguist-documentation=true
+core/*.cpp linguist-language=C++
+core/*.go linguist-language=Go

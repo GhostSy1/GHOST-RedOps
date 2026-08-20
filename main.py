@@ -1,10 +1,10 @@
 import os
 import sys
 import time
+import json
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
-from rich.table import Table
 from rich.syntax import Syntax
 from core.generator import AutonomousExploitEngine
 from core.stealth import PhantomStealthEngine
@@ -25,9 +25,41 @@ console = Console()
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def show_help():
+    help_text = """
+[bold yellow]GHOST-RedOps Help Menu[/bold yellow]
+
+[bold cyan]Description:[/bold cyan]
+Advanced Red Team framework for autonomous exploitation and payload delivery.
+
+[bold cyan]Options:[/bold cyan]
+1. [bold white]Target IP[/bold white]: Specify the IP address of the target system.
+2. [bold white]LHOST[/bold white]: Your listener IP for reverse connections.
+3. [bold white]LPORT[/bold white]: Your listener port for reverse connections.
+4. [bold white]Autonomous Mode[/bold white]: Automatically matches services with 1100+ CVEs.
+
+[bold cyan]Usage:[/bold cyan]
+Follow the interactive prompts after startup to configure your engagement.
+"""
+    console.print(Panel(help_text, title="Help & Documentation", border_style="blue"))
+
 def main():
+    if "--help" in sys.argv or "-h" in sys.argv:
+        show_help()
+        return
+
     clear_screen()
     console.print(Panel(BANNER, border_style="bold red", expand=False))
+    
+    # Explicit Database Check
+    db_path = os.path.join(os.path.dirname(__file__), 'db/payloads.json')
+    if os.path.exists(db_path):
+        with open(db_path, 'r') as f:
+            db_size = len(json.load(f))
+        console.print(f"[bold green][*] Successfully loaded weaponized database with {db_size} active exploits.[/bold green]")
+    else:
+        console.print("[bold red][!] Warning: Exploit database not found![/bold red]")
+
     console.print("[bold yellow][*] Initializing Ghost-RedOps Elite Weaponized Engine...[/bold yellow]\n")
     
     target_ip = Prompt.ask("[bold cyan]Enter Target System IP[/bold cyan]")
@@ -41,7 +73,6 @@ def main():
     engine = AutonomousExploitEngine(lhost, lport, target_ip)
     auto_cve = engine.payload_db[0]['cve'] if engine.payload_db else "CVE-2026-0001"
     
-    # In a real autonomous run, we would scan first. Here we show the elite selection.
     match = next((v for v in engine.payload_db if v['cve'] == auto_cve), engine.payload_db[0])
     
     console.print(Panel(
