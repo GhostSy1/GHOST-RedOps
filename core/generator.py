@@ -1,9 +1,7 @@
-import base64
 import json
 import os
-import random
 
-class UltimateExploitEngine:
+class ActiveExploitEngine:
     def __init__(self, lhost, lport):
         self.lhost = lhost
         self.lport = lport
@@ -16,19 +14,12 @@ class UltimateExploitEngine:
                 return json.load(f)
         return []
 
-    def generate_custom_exploit(self, cve_id):
-        # Find CVE in our 1000+ DB
-        match = next((v for v in self.payload_db if v['cve'] == cve_id), None)
+    def get_exploit_by_cve(self, cve_id):
+        match = next((v for v in self.payload_db if v['cve'].upper() == cve_id.upper()), None)
         if not match:
-            return "CVE not found in local elite database."
+            return None
         
-        # Professional exploit generation logic based on CVE type
-        desc = match['description'].lower()
-        if "overflow" in desc:
-            return f"# Ghost-SY1 Buffer Overflow Exploit for {cve_id}\n# Target: {match['product']}\n# Payload: Reverse TCP to {self.lhost}:{self.lport}\n..."
-        elif "remote code execution" in desc or "rce" in desc:
-            return f"# Ghost-SY1 RCE Exploit for {cve_id}\n# Target: {match['product']}\n# Payload: Encrypted Stager to {self.lhost}:{self.lport}\n..."
-        return f"# Ghost-SY1 Generic Exploit for {cve_id}\n# Payload: {match['description']}"
-
-    def get_top_exploits(self):
-        return self.payload_db[:10]
+        # Customize exploit code with user's LHOST and LPORT
+        code = match['exploit_code'].replace('LHOST', self.lhost).replace('LPORT', str(self.lport))
+        match['custom_exploit'] = code
+        return match
