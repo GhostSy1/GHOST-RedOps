@@ -1,13 +1,20 @@
-# GHOST-RedOps: Polyglot Autonomous Exploitation & C2 Framework 🛡️
+# GHOST-RedOps
 
-**GHOST-RedOps** is a state-of-the-art, polyglot offensive framework engineered using **Python** for orchestration and **C++** for low-level system exploitation and memory manipulation. Designed for the 2026 threat landscape, it bypasses modern EDR solutions using direct syscalls and reflective injection.
+Elite Authorized Security Assessment and Intelligence Suite. Developed by Ghost-SY1.
 
-## 🧠 Polyglot Architecture
+## Features
+- Interactive CLI with screen clear and Ghost banner display.
+- Structured local databases for CVE matching, vulnerability signatures, and telemetry rules.
+- Real-time empirical reconnaissance and policy analysis (Zero simulated data).
+- Automated JSON and CSV report generation with audit trails.
 
-- **C++ Native Core (`injector.cpp`)**: Low-level Windows API manipulation and memory injection to evade behavioral monitoring.
-- **Python Autonomous Engine**: High-level orchestration, stealth management, and 1100+ CVE weaponized database integration.
-- **Direct Syscalls**: Bypasses user-mode hooking by communicating directly with the NT kernel.
+## Installation & Usage
+```bash
+git clone https://github.com/GhostSy1/GHOST-RedOps.git
+cd GHOST-RedOps
+pip install -r requirements.txt
+python3 main.py
+```
 
-## ⚖️ Legal Disclaimer
-
-**FOR AUTHORIZED PROFESSIONAL USE ONLY.** Developed by **Ghost-SY1**.
+## License
+MIT License. Authorized use only.
