@@ -25,7 +25,6 @@ class PhantomStealthEngine:
         }
 
     def evade_waf_delay(self):
-        # Random sleep to bypass rate-limiting and WAF blocking
         delay = random.uniform(0.5, 2.0)
         time.sleep(delay)
 

