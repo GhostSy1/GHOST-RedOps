@@ -1,10 +1,17 @@
 # GHOST-RedOps
 
-Advanced Red Team C2 & Session Orchestration Framework (Ghost-SY1 Standard). Developed by Abdulaziz (Ghost-SY1).
+Professional security assessment and artifact analysis utility. Developed by Abdulaziz (Ghost-SY1).
 
 ## Overview
 
-`GHOST-RedOps` is an advanced Red Team operational tool designed for authorized penetration testing and red teaming engagements. It features an interactive terminal interface with screen clearing and the official Ghost-SY1 banner, robust session/payload management, and strict operational reliability.
+`GHOST-RedOps` is an advanced, production-grade security utility built under the Ghost-SY1 v4.0-PRO standard. It parses local artifacts, calculates SHA-256 integrity hashes, evaluates security indicators, and generates structured JSON, CSV, SARIF 2.1.0, and executive PDF reports without live exploitation or network execution.
+
+## Features
+
+- **Strict Zero-Simulation Engine**: Operates exclusively on real local operator-provided inputs.
+- **Cryptographic Provenance**: Every inspected artifact is bound to a SHA-256 integrity digest.
+- **Multi-Format Reporting**: Native export to JSON, CSV, SARIF 2.1.0, and ReportLab PDF.
+- **Interactive CLI & Banner**: Instant terminal screen clear, Ghost-SY1 banner initialization, and non-interactive CI support.
 
 ## Installation & Setup
 
@@ -14,14 +21,15 @@ cd GHOST-RedOps
 python3 main.py --help
 ```
 
-## Usage
-
-Run the tool interactively or via command-line flags:
+## Usage Example
 
 ```bash
-python3 main.py --no-clear
+python3 main.py --input ./target/ --output report.json --sarif report.sarif --pdf report.pdf
 ```
 
-## Responsible Use
+## Documentation
 
-This tool is intended strictly for authorized security assessments, red team exercises, and educational lab environments under signed contracts (e.g., HackenProof, HackerOne).
+- Architecture: `docs/architecture.md`
+- CLI Reference: `docs/cli-reference.md`
+- Security Policy: `SECURITY.md`
+- Contributing: `CONTRIBUTING.md`
