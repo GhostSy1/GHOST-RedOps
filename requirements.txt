@@ -1,1 +1,2 @@
 rich
+reportlab>=4.0,<5
